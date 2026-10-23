@@ -21,7 +21,39 @@ body {
 
 .invoice-preview {
     width: min(1120px, calc(100% - 48px));
-    margin: 48px auto;
+    margin: 12px auto;
+}
+
+.brand-link {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: #142b49;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+}
+
+.brand-link:hover {
+    color: #1769aa;
+}
+
+.brand-link:focus-visible {
+    border-radius: 3px;
+    outline: 3px solid #9bc9f1;
+    outline-offset: 4px;
+}
+
+.upload-page {
+    position: relative;
+}
+
+.upload-brand {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    margin-bottom: 0;
+    transform: translateX(-50%);
 }
 
 .page-header {
@@ -354,6 +386,11 @@ td {
     color: #344b64;
 }
 
+.products-section td:nth-child(2) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
 tbody tr:last-child td {
     border-bottom: 0;
 }
@@ -365,7 +402,7 @@ tbody tr:hover {
 @media (max-width: 700px) {
     .invoice-preview {
         width: min(560px, calc(100% - 28px));
-        margin: 24px auto;
+        margin: 12px auto;
     }
 
     .page-header {

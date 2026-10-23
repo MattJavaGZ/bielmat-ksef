@@ -199,9 +199,9 @@ public class XmlBuilder {
                     xml.writeEndElement();
                 }
 
-                xml.writeStartElement("OpisPlatnosci");
-                xml.writeCharacters(paymentMethod);
-                xml.writeEndElement();
+//                xml.writeStartElement("OpisPlatnosci");
+//                xml.writeCharacters(paymentMethod);
+//                xml.writeEndElement();
             }
 
             String account = invoice.getPayment().getBankAccount();
@@ -318,13 +318,20 @@ public class XmlBuilder {
         xml.writeEndElement();
 
         xml.writeStartElement("AdresL1");
-        xml.writeCharacters(invoice.getSeller().getStreet() + " " + invoice.getSeller().getBuildingNumber()
-                + (invoice.getSeller().getApartmentNumber() == null ? "" : "/" + invoice.getSeller().getApartmentNumber()));
+        xml.writeCharacters((invoice.getSeller().getStreet() == null ? "" : invoice.getSeller().getStreet()) +
+                (invoice.getSeller().getBuildingNumber() == null ? "" : " " + invoice.getSeller().getBuildingNumber() + " ")
+                + (invoice.getSeller().getApartmentNumber() == null ? "" : "/" + invoice.getSeller().getApartmentNumber() + " ")
+                + invoice.getSeller().getPostalCode() + " " + invoice.getSeller().getCity());
         xml.writeEndElement();
 
-        xml.writeStartElement("AdresL2");
-        xml.writeCharacters(invoice.getSeller().getPostalCode() + " " + invoice.getSeller().getCity());
-        xml.writeEndElement();
+//        xml.writeStartElement("AdresL1");
+//        xml.writeCharacters(invoice.getSeller().getStreet() + " " + invoice.getSeller().getBuildingNumber()
+//                + (invoice.getSeller().getApartmentNumber() == null ? "" : "/" + invoice.getSeller().getApartmentNumber()));
+//        xml.writeEndElement();
+//
+//        xml.writeStartElement("AdresL2");
+//        xml.writeCharacters(invoice.getSeller().getPostalCode() + " " + invoice.getSeller().getCity());
+//        xml.writeEndElement();
 
         xml.writeEndElement();
 
@@ -366,13 +373,20 @@ public class XmlBuilder {
         xml.writeEndElement();
 
         xml.writeStartElement("AdresL1");
-        xml.writeCharacters(buyer.getStreet() + " " + buyer.getBuildingNumber()
-                + (buyer.getApartmentNumber() == null ? "" : "/" + buyer.getApartmentNumber()));
+        xml.writeCharacters((buyer.getStreet() == null ? "" : buyer.getStreet()) +
+                (buyer.getBuildingNumber() == null ? "" : " " + buyer.getBuildingNumber() + " ")
+                + (buyer.getApartmentNumber() == null ? "" : "/" + buyer.getApartmentNumber() + " ")
+                 + buyer.getPostalCode() + " " + buyer.getCity());
         xml.writeEndElement();
 
-        xml.writeStartElement("AdresL2");
-        xml.writeCharacters(buyer.getPostalCode() + " " + buyer.getCity());
-        xml.writeEndElement();
+//        xml.writeStartElement("AdresL1");
+//        xml.writeCharacters(buyer.getStreet() + " " + buyer.getBuildingNumber()
+//                + (buyer.getApartmentNumber() == null ? "" : "/" + buyer.getApartmentNumber()));
+//        xml.writeEndElement();
+//
+//        xml.writeStartElement("AdresL2");
+//        xml.writeCharacters(buyer.getPostalCode() + " " + buyer.getCity());
+//        xml.writeEndElement();
 
         xml.writeEndElement();
 
@@ -422,8 +436,8 @@ public class XmlBuilder {
         requireText(party.getNip(), field + ".nip");
         requireText(party.getName(), field + ".name");
         requireText(party.getCountryCode(), field + ".countryCode");
-        requireText(party.getStreet(), field + ".street");
-        requireText(party.getBuildingNumber(), field + ".buildingNumber");
+//        requireText(party.getStreet(), field + ".street");
+//        requireText(party.getBuildingNumber(), field + ".buildingNumber");
         requireText(party.getPostalCode(), field + ".postalCode");
         requireText(party.getCity(), field + ".city");
     }

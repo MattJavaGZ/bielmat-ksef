@@ -26,7 +26,7 @@ public class InvoiceParser {
     // cena po rabacie, wartość netto, stawka VAT.
     private static final Pattern ITEM_TAIL = Pattern.compile(
             "(\\d+(?:,\\d+)?)\\s+" +
-                    "(SZT\\.?|OPAK\\.?|OP\\.?|PARA\\.?|MB\\.?|KG\\.?|KM\\.?|KOMPLET\\.?|KPL\\.?|KMPL\\.?)\\s+" +   //+OPAK, KOMPLET, KPL, KMPL
+                    "(SZT\\.?|OPAK\\.?|OP\\.?|PARA\\.?|MB\\.?|M\\.?|KG\\.?|KM\\.?|KOMPLET\\.?|KPL\\.?|KMPL\\.?)\\s+" +   //+OPAK, KOMPLET, KPL, KMPL
                     "(\\d[\\d.]*,\\d{2})" +
                     "(?:\\s+(\\d[\\d.]*,\\d{2}))?" +
                     "\\s+(\\d[\\d.]*,\\d{2})" +
@@ -259,16 +259,12 @@ public class InvoiceParser {
         }
     }
 
-    public List<InvoiceItem> parseItems(String text) {
-        return parseItems(text, null);
-    }
-
     private List<InvoiceItem> parseItems(String text, List<String> unrecognizedItems) {
         List<InvoiceItem> items = new ArrayList<>();
 
         Matcher starts = ITEM_START.matcher(text);
         List<Integer> positions = new ArrayList<>();
-        List<Integer> numbers = new ArrayList<>();
+//        List<Integer> numbers = new ArrayList<>();
 
 //        while (starts.find()) {
 //            int number = Integer.parseInt(starts.group(1));
@@ -289,7 +285,7 @@ public class InvoiceParser {
             }
 
             positions.add(starts.start());
-            numbers.add(number);
+//            numbers.add(number);
             lastItemNumber = number;
         }
 
@@ -328,7 +324,28 @@ public class InvoiceParser {
             String name = content.substring(0, tail.start()).trim();
             String suffix = content.substring(tail.end()).trim();
 
+// Zachowaj kod PKWiU, nawet jeśli znajduje się w kolejnej linii.
+            Matcher pkwiuMatcher = Pattern.compile(
+                    "(?i)PKWiU\\s*:\\s*([\\d.]+-[\\d.]+)"
+            ).matcher(content);
+
+            String pkwiu = pkwiuMatcher.find()
+                    ? "PKWiU: " + pkwiuMatcher.group(1)
+                    : null;
+
+// Usuń PKWiU z suffix, żeby nie dodać go drugi raz.
+            suffix = suffix.replaceAll(
+                    "(?i)PKWiU\\s*:\\s*[\\d.]+-[\\d.]+",
+                    ""
+            ).trim();
+
             name = appendProductSuffix(name, suffix);
+
+            if (pkwiu != null && !name.toLowerCase().contains("pkwiu:")) {
+                name = name + " " + pkwiu;
+            }
+
+            name = name.replaceAll("\\s+", " ").trim();
 
             InvoiceItem item = new InvoiceItem();
             item.setPosition(itemNumber);
