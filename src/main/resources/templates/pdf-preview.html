@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pl"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Podgląd faktury</title>
+    <link rel="stylesheet" th:href="@{/main.css}">
+</head>
+<body>
+<main class="invoice-preview">
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">Dokument sprzedaży</p>
+            <h1>Podgląd faktury</h1>
+
+<!--            <p th:text="|Tekst z PDF: ${pdfText}|">Tekst z PDF</p>-->
+
+            <p class="file-name" th:text="|Nazwa pliku PDF: ${filename}|">Nazwa pliku PDF</p>
+        </div>
+
+        <form class="download-form" th:action="@{/download-xml}" method="post">
+            <input type="hidden" th:name="invoice" th:value="${invoice}" />
+            <button type="submit">Pobierz XML</button>
+        </form>
+    </header>
+
+    <section class="party-grid" aria-label="Strony transakcji">
+        <article class="card">
+            <h2>Sprzedawca</h2>
+            <p class="primary-value" th:text="${session.invoice.getSeller().getName()}"></p>
+            <p th:text="|NIP: ${session.invoice.getSeller().getNip()}|"></p>
+            <p th:text="|${session.invoice.getSeller().getCity()} ${session.invoice.getSeller().getPostalCode()}|"></p>
+            <p th:text="|${session.invoice.getSeller().getStreet()} ${session.invoice.getSeller().getBuildingNumber()} ${session.invoice.getSeller().getApartmentNumber() == null ? '' : ' ' + session.invoice.getSeller().getApartmentNumber()}|"></p>
+        </article>
+
+        <article class="card">
+            <h2>Nabywca</h2>
+            <p class="primary-value" th:text="${session.invoice.getBuyer().getName()}"></p>
+            <p th:text="|NIP: ${session.invoice.getBuyer().getNip()}|"></p>
+            <p th:text="|${session.invoice.getBuyer().getCity()} ${session.invoice.getBuyer().getPostalCode()}|"></p>
+            <p th:text="|${session.invoice.getBuyer().getStreet()} ${session.invoice.getBuyer().getBuildingNumber()} ${session.invoice.getBuyer().getApartmentNumber() == null ? '' : ' ' + session.invoice.getBuyer().getApartmentNumber()}|"></p>
+        </article>
+    </section>
+
+    <section class="card invoice-details">
+        <h2>Dane faktury</h2>
+        <div class="details-grid">
+            <p th:text="|Numer faktury: ${session.invoice.getInvoiceNumber()}|"></p>
+            <p th:text="|Data wystawienia: ${session.invoice.getIssueDate()}|"></p>
+            <p th:text="|Data sprzedaży: ${session.invoice.getSaleDate()}|"></p>
+            <p th:text="|Split Payment: ${session.invoice.isSplitPayment() ? 'Tak' : 'Nie'}|"></p>
+            <p th:text="|WZ: ${session.invoice.getInfo()}|"></p>
+        </div>
+    </section>
+
+    <section class="card payment-section">
+        <h2>Płatność</h2>
+        <div class="details-grid">
+            <p th:text="|Metoda płatności: ${session.invoice.getPayment().getMethod()}|"></p>
+            <p th:text="|Termin płatności: ${session.invoice.getPayment().getDueDate()}|"></p>
+            <p th:text="|Numer konta: ${session.invoice.getPayment().getBankAccount()}|"></p>
+            <p th:text="|Nazwa banku: ${session.invoice.getPayment().getBankName()}|"></p>
+        </div>
+    </section>
+
+    <section class="card unrecognized-items-section"
+             aria-labelledby="unrecognized-items-heading"
+             th:if="${!session.invoice.getUnrecognizedItems().isEmpty()}">
+        <h2 id="unrecognized-items-heading">Nierozpoznane pozycje</h2>
+        <p class="unrecognized-items-description">
+            Poniższe pozycje z PDF nie zostały uwzględnione w tabeli produktów:
+        </p>
+        <ul>
+            <li th:each="item : ${session.invoice.getUnrecognizedItems()}"
+                th:text="${item}"></li>
+        </ul>
+    </section>
+
+    <section class="card products-section">
+        <h2>Produkty</h2>
+        <div class="table-scroll">
+            <table>
+                <thead>
+                <tr>
+                    <th>Pozycja</th>
+                    <th>Nazwa produktu</th>
+                    <th>Jednostka</th>
+                    <th>Ilość</th>
+                    <th>Cena netto</th>
+                    <th>Łączna cena netto</th>
+                    <th>Stawka VAT</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${session.invoice.getItems()}">
+                    <td th:text="${product.getPosition()}"></td>
+                    <td th:text="${product.getName()}"></td>
+                    <td th:text="${product.getUnit()}"></td>
+                    <td th:text="${product.getQuantity()}"></td>
+                    <td th:text="${product.getUnitNetPrice()}"></td>
+                    <td th:text="${product.getNetValue()}"></td>
+                    <td th:text="|${product.getVatRate()}%|"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card totals-section" aria-label="Podsumowanie kwot">
+        <h2>Podsumowanie kwot</h2>
+        <div class="totals">
+            <p th:text="|Łącznie netto: ${session.invoice.getTotalNet()}|"></p>
+            <p th:text="|Łącznie VAT: ${session.invoice.getTotalVat()}|"></p>
+            <p class="gross-total" th:text="|Łącznie brutto: ${session.invoice.getTotalGross()}|"></p>
+        </div>
+    </section>
+</main>
+</body>
+</html>

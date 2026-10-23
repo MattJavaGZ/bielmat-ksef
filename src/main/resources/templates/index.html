@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Import faktury PDF</title>
+    <link rel="stylesheet" th:href="@{/main.css}">
+</head>
+<body>
+<main class="upload-page">
+    <section class="upload-card">
+<!--        <div class="upload-icon" aria-hidden="true">PDF</div>-->
+        <p class="eyebrow">Bielmat · KSeF</p>
+        <h1>Zaimportuj fakturę</h1>
+        <p class="upload-description">Wybierz fakturę w formacie PDF, a przygotujemy jej dane do podglądu i eksportu.</p>
+
+        <p class="upload-error" th:if="${error}" th:text="${error}" role="alert"></p>
+
+        <form class="upload-form" th:action="@{/upload-pdf}" method="post" enctype="multipart/form-data">
+            <label for="file">Plik faktury PDF</label>
+            <input type="file" id="file" name="file" accept=".pdf,application/pdf" required>
+            <button type="submit">Wczytaj fakturę</button>
+        </form>
+        <p class="upload-hint">Obsługiwany format: PDF</p>
+    </section>
+</main>
+</body>
+</html>
