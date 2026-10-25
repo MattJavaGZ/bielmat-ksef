@@ -31,16 +31,20 @@
             <h2>Sprzedawca</h2>
             <p class="primary-value" th:text="${session.invoice.getSeller().getName()}"></p>
             <p th:text="|NIP: ${session.invoice.getSeller().getNip()}|"></p>
-            <p th:text="|${session.invoice.getSeller().getCity()} ${session.invoice.getSeller().getPostalCode()}|"></p>
-            <p th:text="|${session.invoice.getSeller().getStreet()} ${session.invoice.getSeller().getBuildingNumber()} ${session.invoice.getSeller().getApartmentNumber() == null ? '' : ' ' + session.invoice.getSeller().getApartmentNumber()}|"></p>
+<!--            <p th:text="|${session.invoice.getSeller().getCity()} ${session.invoice.getSeller().getPostalCode()}|"></p>-->
+<!--            <p th:text="|${session.invoice.getSeller().getStreet()} ${session.invoice.getSeller().getBuildingNumber()}-->
+<!--            ${session.invoice.getSeller().getApartmentNumber() == null ? '' : ' ' + session.invoice.getSeller().getApartmentNumber()}|"></p>-->
+            <p th:text="|${session.invoice.getSeller().getAddressKsef()}|"></p>
         </article>
 
         <article class="card">
             <h2>Nabywca</h2>
             <p class="primary-value" th:text="${session.invoice.getBuyer().getName()}"></p>
             <p th:text="|NIP: ${session.invoice.getBuyer().getNip()}|"></p>
-            <p th:text="|${session.invoice.getBuyer().getCity()} ${session.invoice.getBuyer().getPostalCode()}|"></p>
-            <p th:text="|${session.invoice.getBuyer().getStreet()} ${session.invoice.getBuyer().getBuildingNumber()} ${session.invoice.getBuyer().getApartmentNumber() == null ? '' : ' ' + session.invoice.getBuyer().getApartmentNumber()}|"></p>
+<!--            <p th:text="|${session.invoice.getBuyer().getCity()} ${session.invoice.getBuyer().getPostalCode()}|"></p>-->
+<!--            <p th:text="|${session.invoice.getBuyer().getStreet()} ${session.invoice.getBuyer().getBuildingNumber()}-->
+<!--            ${session.invoice.getBuyer().getApartmentNumber() == null ? '' : ' ' + session.invoice.getBuyer().getApartmentNumber()}|"></p>-->
+            <p th:text="|${session.invoice.getBuyer().getAddressKsef()}|"></p>
         </article>
     </section>
 
@@ -59,9 +63,12 @@
         <h2>Płatność</h2>
         <div class="details-grid">
             <p th:text="|Metoda płatności: ${session.invoice.getPayment().getMethod()}|"></p>
-            <p th:text="|Termin płatności: ${session.invoice.getPayment().getDueDate()}|"></p>
-            <p th:text="|Numer konta: ${session.invoice.getPayment().getBankAccount()}|"></p>
-            <p th:text="|Nazwa banku: ${session.invoice.getPayment().getBankName()}|"></p>
+            <p th:text="|Termin płatności: ${session.invoice.getPayment().getDueDate() == null ?
+             'nie podano' : session.invoice.getPayment().getDueDate()}|"></p>
+            <p th:text="|Numer konta: ${session.invoice.getPayment().getBankAccount() == null ?
+             'nie podano' : session.invoice.getPayment().getBankAccount()}|"></p>
+            <p th:text="|Nazwa banku: ${session.invoice.getPayment().getBankName() == null ?
+             'nie podano' : session.invoice.getPayment().getBankName()} |"></p>
         </div>
     </section>
 

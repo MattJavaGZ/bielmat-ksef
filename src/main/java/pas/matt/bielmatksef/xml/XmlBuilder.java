@@ -318,10 +318,7 @@ public class XmlBuilder {
         xml.writeEndElement();
 
         xml.writeStartElement("AdresL1");
-        xml.writeCharacters((invoice.getSeller().getStreet() == null ? "" : invoice.getSeller().getStreet()) +
-                (invoice.getSeller().getBuildingNumber() == null ? "" : " " + invoice.getSeller().getBuildingNumber() + " ")
-                + (invoice.getSeller().getApartmentNumber() == null ? "" : "/" + invoice.getSeller().getApartmentNumber() + " ")
-                + invoice.getSeller().getPostalCode() + " " + invoice.getSeller().getCity());
+        xml.writeCharacters(invoice.getSeller().getAddressKsef());
         xml.writeEndElement();
 
 //        xml.writeStartElement("AdresL1");
@@ -373,10 +370,7 @@ public class XmlBuilder {
         xml.writeEndElement();
 
         xml.writeStartElement("AdresL1");
-        xml.writeCharacters((buyer.getStreet() == null ? "" : buyer.getStreet()) +
-                (buyer.getBuildingNumber() == null ? "" : " " + buyer.getBuildingNumber() + " ")
-                + (buyer.getApartmentNumber() == null ? "" : "/" + buyer.getApartmentNumber() + " ")
-                 + buyer.getPostalCode() + " " + buyer.getCity());
+        xml.writeCharacters(buyer.getAddressKsef());
         xml.writeEndElement();
 
 //        xml.writeStartElement("AdresL1");

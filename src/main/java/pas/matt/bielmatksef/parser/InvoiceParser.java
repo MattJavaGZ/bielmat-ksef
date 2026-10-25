@@ -243,6 +243,9 @@ public class InvoiceParser {
                     buyerStreetMatcher.group(1).trim());
         }
 
+        seller.setAddressKsef(seller.generateAddressKsef());
+        buyer.setAddressKsef(buyer.generateAddressKsef());
+
         invoice.setSeller(seller);
         invoice.setBuyer(buyer);
     }

@@ -10,6 +10,31 @@ public class InvoiceParty {
     private String street;
     private String buildingNumber;
     private String apartmentNumber;
+    private String addressKsef;
+
+    public String generateAddressKsef() {
+        StringBuilder address = new StringBuilder();
+        if (street != null && !street.isEmpty()) {
+            address.append(street).append(" ");
+        }
+        if (buildingNumber != null && !buildingNumber.isEmpty()) {
+            address.append(buildingNumber);
+            if (apartmentNumber == null || apartmentNumber.isEmpty()) {
+                address.append(", ");
+            }
+            if (apartmentNumber != null && !apartmentNumber.isEmpty()) {
+                address.append("/").append(apartmentNumber).append(", ");
+            }
+        }
+        if (postalCode != null && !postalCode.isEmpty()) {
+            address.append(postalCode).append(" ");
+        }
+        if (city != null && !city.isEmpty()) {
+            address.append(city);
+        }
+
+        return address.toString().trim();
+    }
 
     public InvoiceParty() {
     }
@@ -76,5 +101,14 @@ public class InvoiceParty {
 
     public void setApartmentNumber(String apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
+    }
+
+
+    public String getAddressKsef() {
+        return addressKsef;
+    }
+
+    public void setAddressKsef(String addressKsef) {
+        this.addressKsef = addressKsef;
     }
 }
