@@ -104,6 +104,35 @@ h2 {
     flex: 0 0 auto;
 }
 
+.header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.button-link {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    border: 1px solid #1769aa;
+    border-radius: 10px;
+    color: #1769aa;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.button-link:hover {
+    background: #edf6fd;
+}
+
+.button-link:focus-visible {
+    outline: 3px solid #9bc9f1;
+    outline-offset: 3px;
+}
+
 button {
     min-height: 46px;
     padding: 0 20px;
@@ -366,6 +395,148 @@ table {
     white-space: nowrap;
 }
 
+.edit-section {
+    margin-bottom: 18px;
+}
+
+.edit-submit {
+    display: block;
+    margin-left: auto;
+}
+
+.edit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.edit-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.edit-field-wide {
+    grid-column: 1 / -1;
+}
+
+.edit-field label {
+    color: #344b64;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.edit-field input,
+.edit-field select,
+.edit-field textarea,
+td input {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    border: 1px solid #bdcddd;
+    border-radius: 8px;
+    background: #fff;
+    color: #1d2939;
+    font: inherit;
+}
+
+.edit-party-grid .edit-field-wide input {
+    min-height: 50px;
+    font-size: 0.98rem;
+}
+
+.edit-field textarea {
+    resize: vertical;
+}
+
+.edit-field input:focus,
+.edit-field select:focus,
+.edit-field textarea:focus,
+td input:focus {
+    border-color: #1769aa;
+    outline: 3px solid #d8e9f7;
+}
+
+.edit-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #344b64;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.edit-checkbox input {
+    width: 18px;
+    height: 18px;
+    accent-color: #1769aa;
+}
+
+.edit-hint {
+    margin: 14px 0 0;
+    color: #66768a;
+    font-size: 0.85rem;
+}
+
+.invoice-items-edit {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+}
+
+.invoice-items-edit th {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.invoice-items-edit th:nth-child(1),
+.invoice-items-edit td:nth-child(1) {
+    width: 7%;
+}
+
+.invoice-items-edit th:nth-child(2),
+.invoice-items-edit td:nth-child(2) {
+    width: 31%;
+}
+
+.invoice-items-edit th:nth-child(3),
+.invoice-items-edit td:nth-child(3) {
+    width: 9%;
+}
+
+.invoice-items-edit th:nth-child(4),
+.invoice-items-edit td:nth-child(4) {
+    width: 11%;
+}
+
+.invoice-items-edit th:nth-child(5),
+.invoice-items-edit td:nth-child(5),
+.invoice-items-edit th:nth-child(6),
+.invoice-items-edit td:nth-child(6) {
+    width: 15%;
+}
+
+.invoice-items-edit th:nth-child(7),
+.invoice-items-edit td:nth-child(7) {
+    width: 12%;
+}
+
+.invoice-items-edit td {
+    padding: 10px 6px;
+}
+
+.invoice-items-edit td input {
+    min-width: 0;
+    min-height: 44px;
+    padding: 7px;
+    font-size: 0.82rem;
+}
+
+.invoice-items-edit td:nth-child(2) input {
+    min-width: 0;
+    font-size: 0.9rem;
+}
+
 th,
 td {
     padding: 13px 15px;
@@ -417,6 +588,14 @@ tbody tr:hover {
 
     .details-grid {
         grid-template-columns: 1fr;
+    }
+
+    .edit-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .edit-field-wide {
+        grid-column: auto;
     }
 
     .card {

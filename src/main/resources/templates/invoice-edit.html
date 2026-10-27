@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pl"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edycja faktury</title>
+    <link rel="stylesheet" th:href="@{/main.css}">
+</head>
+<body>
+<main class="invoice-preview">
+    <a class="brand-link" th:href="@{/}">BielmatKSeF</a>
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">Dokument sprzedaży</p>
+            <h1>Edycja faktury</h1>
+        </div>
+    </header>
+
+    <form action="#" th:action="@{/edycja-faktury}" th:object="${invoice}" method="post">
+        <section class="card invoice-details edit-section">
+            <h2>Dane faktury</h2>
+            <div class="edit-grid">
+                <div class="edit-field">
+                    <label for="invoiceNumber">Numer faktury</label>
+                    <input id="invoiceNumber" type="text" required th:field="*{invoiceNumber}">
+                </div>
+                <div class="edit-field">
+                    <label for="issueDate">Data wystawienia</label>
+                    <input id="issueDate" type="date" required th:field="*{issueDate}">
+                </div>
+                <div class="edit-field">
+                    <label for="saleDate">Data sprzedaży</label>
+                    <input id="saleDate" type="date" required th:field="*{saleDate}">
+                </div>
+                <div class="edit-field">
+                    <label for="placeOfIssue">Miejsce wystawienia</label>
+                    <input id="placeOfIssue" type="text" required th:field="*{placeOfIssue}">
+                </div>
+<!--                <div class="edit-field">-->
+<!--                    <label for="currency">Waluta</label>-->
+<!--                    <input id="currency" type="text" required th:field="*{currency}">-->
+<!--                </div>-->
+<!--                <div class="edit-field">-->
+<!--                    <label for="invoiceType">Rodzaj faktury</label>-->
+<!--                    <input id="invoiceType" type="text" required th:field="*{invoiceType}">-->
+<!--                </div>-->
+                <div class="edit-field edit-field-wide">
+                    <label for="info">Informacje dodatkowe (WZ)</label>
+                    <textarea id="info" rows="3" th:field="*{info}"></textarea>
+                </div>
+                <label class="edit-checkbox">
+                    <input type="checkbox" th:field="*{splitPayment}">
+                    Mechanizm podzielonej płatności (Split Payment)
+                </label>
+            </div>
+        </section>
+
+        <div class="party-grid edit-party-grid">
+            <section class="card edit-section">
+                <h2>Sprzedawca</h2>
+                <div class="edit-grid">
+                    <div class="edit-field">
+                        <label for="sellerName">Nazwa</label>
+                        <input id="sellerName" type="text" required th:field="*{seller.name}">
+                    </div>
+                    <div class="edit-field">
+                        <label for="sellerNip">NIP</label>
+                        <input id="sellerNip" type="text" required th:field="*{seller.nip}">
+                    </div>
+                    <div class="edit-field">
+                        <label for="sellerCountryCode">Kod kraju</label>
+                        <input id="sellerCountryCode" type="text" required th:field="*{seller.countryCode}">
+                    </div>
+                    <div class="edit-field edit-field-wide">
+                        <label for="sellerAddress">Adres</label>
+                        <input id="sellerAddress" type="text" required th:field="*{seller.addressKsef}">
+                    </div>
+                </div>
+            </section>
+
+            <section class="card edit-section">
+                <h2>Nabywca</h2>
+                <div class="edit-grid">
+                    <div class="edit-field">
+                        <label for="buyerName">Nazwa</label>
+                        <input id="buyerName" type="text" required th:field="*{buyer.name}">
+                    </div>
+                    <div class="edit-field">
+                        <label for="buyerNip">NIP</label>
+                        <input id="buyerNip" type="text" required th:field="*{buyer.nip}">
+                    </div>
+                    <div class="edit-field">
+                        <label for="buyerCountryCode">Kod kraju</label>
+                        <input id="buyerCountryCode" type="text" required th:field="*{buyer.countryCode}">
+                    </div>
+                    <div class="edit-field edit-field-wide">
+                        <label for="buyerAddress">Adres</label>
+                        <input id="buyerAddress" type="text" required th:field="*{buyer.addressKsef}">
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section class="card payment-section edit-section">
+            <h2>Płatność</h2>
+            <div class="edit-grid">
+                <div class="edit-field">
+                    <label for="paymentMethod">Metoda płatności</label>
+                    <select id="paymentMethod" name="payment.method">
+                        <option value="" th:selected="${invoice.payment.method == null}">Wybierz metodę płatności</option>
+                        <option value="Przelew"
+                                th:selected="${invoice.payment.method != null and #strings.toLowerCase(invoice.payment.method).contains('przelew')}">
+                            Przelew
+                        </option>
+                        <option value="Karta"
+                                th:selected="${invoice.payment.method != null and #strings.toLowerCase(invoice.payment.method).contains('karta')}">
+                            Karta
+                        </option>
+                        <option value="Gotówka"
+                                th:selected="${invoice.payment.method != null and (#strings.toLowerCase(invoice.payment.method).contains('gotówka')
+                                or #strings.toLowerCase(invoice.payment.method).contains('gotowka')
+                                or #strings.toLowerCase(invoice.payment.method).contains('gotówką'))}">
+                            Gotówka
+                        </option>
+                    </select>
+                </div>
+                <div class="edit-field">
+                    <label for="paymentDueDate">Termin płatności</label>
+                    <input id="paymentDueDate" type="date" th:field="*{payment.dueDate}">
+                </div>
+                <div class="edit-field">
+                    <label for="bankAccount">Numer konta</label>
+                    <input id="bankAccount" type="text" th:field="*{payment.bankAccount}">
+                </div>
+                <div class="edit-field">
+                    <label for="bankName">Nazwa banku</label>
+                    <input id="bankName" type="text" th:field="*{payment.bankName}">
+                </div>
+
+                <div class="edit-field">
+                    <label for="paymentTerm">Długość terminu</label>
+                    <input id="paymentTerm" type="number" th:field="*{payment.paymentTermDays}">
+                </div>
+
+            </div>
+        </section>
+
+        <section class="card products-section edit-section">
+            <h2>Pozycje produktów</h2>
+            <div class="table-scroll">
+                <table class="invoice-items-edit">
+                    <thead>
+                    <tr>
+                        <th scope="col">Pozycja</th>
+                        <th scope="col">Nazwa produktu</th>
+                        <th scope="col">Jednostka</th>
+                        <th scope="col">Ilość</th>
+                        <th scope="col">Cena netto</th>
+                        <th scope="col">Łączna cena netto</th>
+<!--                        <th scope="col">Stawka VAT</th>-->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item, status : *{items}">
+                        <td><input type="number" min="1" required aria-label="Pozycja"
+                                   th:field="*{items[__${status.index}__].position}"></td>
+                        <td><input type="text" required aria-label="Nazwa produktu"
+                                   th:field="*{items[__${status.index}__].name}"></td>
+                        <td><input type="text" required aria-label="Jednostka"
+                                   th:field="*{items[__${status.index}__].unit}"></td>
+                        <td><input type="number" min="0" step="0.001" required aria-label="Ilość"
+                                   th:field="*{items[__${status.index}__].quantity}"></td>
+                        <td><input type="number" min="0" step="0.01" required aria-label="Cena netto"
+                                   th:field="*{items[__${status.index}__].unitNetPrice}"></td>
+                        <td><input type="number" min="0" step="0.01" required aria-label="Łączna cena netto"
+                                   th:field="*{items[__${status.index}__].netValue}"></td>
+<!--                        <td><input type="text" required aria-label="Stawka VAT"-->
+<!--                                   th:field="*{items[__${status.index}__].vatRate}"></td>-->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="edit-hint">Po zmianie produktów zaktualizuj też podsumowanie kwot poniżej.</p>
+        </section>
+
+        <section class="card totals-section edit-section">
+            <h2>Podsumowanie kwot</h2>
+            <div class="edit-grid">
+                <div class="edit-field">
+                    <label for="totalNet">Łącznie netto</label>
+                    <input id="totalNet" type="number" min="0" step="0.01" required th:field="*{totalNet}">
+                </div>
+                <div class="edit-field">
+                    <label for="totalVat">Łącznie VAT</label>
+                    <input id="totalVat" type="number" min="0" step="0.01" required th:field="*{totalVat}">
+                </div>
+                <div class="edit-field">
+                    <label for="totalGross">Łącznie brutto</label>
+                    <input id="totalGross" type="number" min="0" step="0.01" required th:field="*{totalGross}">
+                </div>
+            </div>
+        </section>
+
+        <button class="edit-submit" type="submit">Zapisz zmiany</button>
+    </form>
+</main>
+</body>
+</html>

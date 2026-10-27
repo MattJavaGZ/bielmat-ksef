@@ -182,11 +182,27 @@ public class XmlBuilder {
 
             if (invoice.getPayment().getDueDate() != null) {
                 xml.writeStartElement("TerminPlatnosci");
+
                 xml.writeStartElement("Termin");
-                xml.writeCharacters(
-                        invoice.getPayment().getDueDate().toString()
-                );
+                xml.writeCharacters(invoice.getPayment().getDueDate().toString());
                 xml.writeEndElement();
+                    //dodatkowy opis płatności
+                    if (invoice.getPayment().getPaymentTermDays() != null) {
+                        xml.writeStartElement("TerminOpis");
+
+                        xml.writeStartElement("Ilosc");
+                        xml.writeCharacters(String.valueOf(invoice.getPayment().getPaymentTermDays()));
+                        xml.writeEndElement();
+                        xml.writeStartElement("Jednostka");
+                        xml.writeCharacters("dni");
+                        xml.writeEndElement();
+                        xml.writeStartElement("ZdarzeniePoczatkowe");
+                        xml.writeCharacters("Przelew");
+                        xml.writeEndElement();
+
+                        xml.writeEndElement();
+                    }
+
                 xml.writeEndElement();
             }
 
@@ -397,43 +413,44 @@ public class XmlBuilder {
     }
 
     private static void validateInvoice(Invoice invoice) {
-        requirePresent(invoice, "invoice");
-        requireText(invoice.getCurrency(), "invoice.currency");
-        requireText(invoice.getInvoiceNumber(), "invoice.invoiceNumber");
-        requirePresent(invoice.getIssueDate(), "invoice.issueDate");
-        requirePresent(invoice.getSaleDate(), "invoice.saleDate");
-        requireText(invoice.getPlaceOfIssue(), "invoice.placeOfIssue");
-        requireText(invoice.getInvoiceType(), "invoice.invoiceType");
-        requirePresent(invoice.getTotalNet(), "invoice.totalNet");
-        requirePresent(invoice.getTotalVat(), "invoice.totalVat");
-        requirePresent(invoice.getTotalGross(), "invoice.totalGross");
+            requirePresent(invoice, "invoice");
+            requireText(invoice.getCurrency(), "invoice.currency");
+            requireText(invoice.getInvoiceNumber(), "invoice.invoiceNumber");
+            requirePresent(invoice.getIssueDate(), "invoice.issueDate");
+            requirePresent(invoice.getSaleDate(), "invoice.saleDate");
+            requireText(invoice.getPlaceOfIssue(), "invoice.placeOfIssue");
+            requireText(invoice.getInvoiceType(), "invoice.invoiceType");
+            requirePresent(invoice.getTotalNet(), "invoice.totalNet");
+            requirePresent(invoice.getTotalVat(), "invoice.totalVat");
+            requirePresent(invoice.getTotalGross(), "invoice.totalGross");
         validateParty(invoice.getSeller(), "invoice.seller");
         validateParty(invoice.getBuyer(), "invoice.buyer");
 
-        List<InvoiceItem> items = invoice.getItems();
-        requirePresent(items, "invoice.items");
-        for (int i = 0; i < items.size(); i++) {
-            InvoiceItem item = items.get(i);
-            String field = "invoice.items[" + i + "]";
-            requirePresent(item, field);
-            requireText(item.getName(), field + ".name");
-            requireText(item.getUnit(), field + ".unit");
-            requirePresent(item.getQuantity(), field + ".quantity");
-            requirePresent(item.getUnitNetPrice(), field + ".unitNetPrice");
-            requirePresent(item.getNetValue(), field + ".netValue");
-            requireText(item.getVatRate(), field + ".vatRate");
-        }
+//        List<InvoiceItem> items = invoice.getItems();
+//        requirePresent(items, "invoice.items");
+//        for (int i = 0; i < items.size(); i++) {
+//            InvoiceItem item = items.get(i);
+//            String field = "invoice.items[" + i + "]";
+//            requirePresent(item, field);
+//            requireText(item.getName(), field + ".name");
+//            requireText(item.getUnit(), field + ".unit");
+//            requirePresent(item.getQuantity(), field + ".quantity");
+//            requirePresent(item.getUnitNetPrice(), field + ".unitNetPrice");
+//            requirePresent(item.getNetValue(), field + ".netValue");
+//            requireText(item.getVatRate(), field + ".vatRate");
+//        }
     }
 
     private static void validateParty(InvoiceParty party, String field) {
         requirePresent(party, field);
         requireText(party.getNip(), field + ".nip");
         requireText(party.getName(), field + ".name");
-        requireText(party.getCountryCode(), field + ".countryCode");
+        requireText(party.getAddressKsef(), field + ".adres");
+//        requireText(party.getCountryCode(), field + ".countryCode");
 //        requireText(party.getStreet(), field + ".street");
 //        requireText(party.getBuildingNumber(), field + ".buildingNumber");
-        requireText(party.getPostalCode(), field + ".postalCode");
-        requireText(party.getCity(), field + ".city");
+//        requireText(party.getPostalCode(), field + ".postalCode");
+//        requireText(party.getCity(), field + ".city");
     }
 
     private static void requireText(String value, String field) {

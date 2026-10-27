@@ -1,10 +1,7 @@
 package pas.matt.bielmatksef.parser;
 
 import org.springframework.stereotype.Service;
-import pas.matt.bielmatksef.model.Invoice;
-import pas.matt.bielmatksef.model.InvoiceItem;
-import pas.matt.bielmatksef.model.InvoiceParty;
-import pas.matt.bielmatksef.model.InvoicePayment;
+import pas.matt.bielmatksef.model.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,7 +23,8 @@ public class InvoiceParser {
     // cena po rabacie, wartość netto, stawka VAT.
     private static final Pattern ITEM_TAIL = Pattern.compile(
             "(\\d+(?:,\\d+)?)\\s+" +
-                    "(SZT\\.?|OPAK\\.?|OP\\.?|PARA\\.?|MB\\.?|M\\.?|KG\\.?|KM\\.?|KOMPLET\\.?|KPL\\.?|KMPL\\.?)\\s+" +   //+OPAK, KOMPLET, KPL, KMPL
+                    "(SZT\\.?|OPAK\\.?|OP\\.?|PARA\\.?|PAR\\.?|ROLK\\.?|MB\\.?|M\\.?|M2\\.?|M3\\.?|MIKR\\.?|KG\\.?|T\\.?" +
+                    "|TONA\\.?|KM\\.?|KOMPLET\\.?|KPL\\.?|KMPL\\.?|KOMP\\.?|KWH\\.?|L\\.?|LITR\\.?|USŁU\\.?|ZEST\\.?)\\s+" +   //+OPAK, KOMPLET, KPL, KMPL
                     "(\\d[\\d.]*,\\d{2})" +
                     "(?:\\s+(\\d[\\d.]*,\\d{2}))?" +
                     "\\s+(\\d[\\d.]*,\\d{2})" +
@@ -70,8 +68,10 @@ public class InvoiceParser {
                 text.matches("(?is).*mechanizm\\s+podzielnej\\s+płatności.*")
         );
 
-        //Sprzedawca, nabywca
-        parseParties(text, invoice);
+//        //Sprzedawca, nabywca
+//        parseParties(text, invoice);
+        parseBuyer(text,invoice);
+        generateSeller(invoice);
 
         // Informacje dodatkowe, np. numery WZ
         invoice.setInfo(parseInfo(text));
@@ -93,6 +93,8 @@ public class InvoiceParser {
         invoice.setItems(parseItems(text, unrecognizedItems));
         invoice.setUnrecognizedItems(unrecognizedItems);
 
+        InvoiceValidation.validateInvoice(invoice);
+
         return invoice;
     }
 
@@ -108,6 +110,15 @@ public class InvoiceParser {
                 text,
                 "(?iu)(?:Forma\\s+płatności\\s*:?\\s*|ZAPŁACONO\\s+)?(Przelew(?:\\s+\\d+\\s+dni)?|KARTA|gotówk[ąa]|gotowk[ąa])"
         ));
+
+        String paymentTermDays = findFirst(
+                text,
+                "(?iu)Przelew\\s+(\\d+)\\s+dni"
+        );
+
+        if (paymentTermDays != null) {
+            payment.setPaymentTermDays(Integer.parseInt(paymentTermDays));
+        }
 
         String dueDate = findFirst(
                 text,
@@ -162,13 +173,100 @@ public class InvoiceParser {
 
         return null;
     }
-    private void parseParties(String text, Invoice invoice) {
+//    private void parseParties(String text, Invoice invoice) {
+//        String[] lines = text.split("\\R");
+//
+//        // Znajdź wiersz z nazwami sprzedawcy i nabywcy.
+//        String sellerName = null;
+//        String buyerName = null;
+//
+//        Pattern namesPattern = Pattern.compile(
+//                "^(.+?\\b(?:Sp\\.\\s*z\\s*o\\.\\s*o\\.|S\\.\\s*A\\.))\\s+(.+)$",
+//                Pattern.CASE_INSENSITIVE
+//        );
+//
+//        for (int i = 0; i < lines.length - 1; i++) {
+//            if (lines[i].contains("SPRZEDAWCA")
+//                    && lines[i].contains("NABYWCA")) {
+//
+//                Matcher names = namesPattern.matcher(lines[i + 1].trim());
+//
+//                if (names.find()) {
+//                    sellerName = names.group(1).trim();
+//                    buyerName = names.group(2).trim();
+//                }
+//                break;
+//            }
+//        }
+//
+//        InvoiceParty seller = new InvoiceParty();
+//        InvoiceParty buyer = new InvoiceParty();
+//
+//        seller.setName(sellerName);
+//        buyer.setName(buyerName);
+//
+//        // Odczytaj numery NIP w kolejności występowania na fakturze.
+//        Matcher nipMatcher = Pattern.compile(
+//                "NIP:\\s*(?:PL)?\\s*(\\d{10})",
+//                Pattern.CASE_INSENSITIVE
+//        ).matcher(text);
+//
+//        if (nipMatcher.find()) {
+//            seller.setNip(nipMatcher.group(1));
+//        }
+//
+//        if (nipMatcher.find()) {
+//            buyer.setNip(nipMatcher.group(1));
+//        }
+//
+//        // Adresy: wiersz zawierający oba kody pocztowe.
+//        Pattern addressesPattern = Pattern.compile(
+//                "^(\\d{2}-\\d{3})\\s+(.+?)\\s+" +
+//                        "(ul\\.?\\s*.+?\\s+\\d+[A-Za-z]?)\\s+" +
+//                        "(\\d{2}-\\d{3})\\s+(.+?)\\s*$",
+//                Pattern.CASE_INSENSITIVE
+//        );
+//
+//        for (String line : lines) {
+//            Matcher addresses = addressesPattern.matcher(line.trim());
+//
+//            if (addresses.find()) {
+//                seller.setPostalCode(addresses.group(1));
+//                seller.setCity(addresses.group(2).trim());
+//                setStreetAndBuilding(seller, addresses.group(3));
+//
+//                buyer.setPostalCode(addresses.group(4));
+//                buyer.setCity(addresses.group(5).trim());
+//                break;
+//            }
+//        }
+//
+//        // Ulica nabywcy występuje po numerze REGON.
+//        Pattern buyerStreetPattern = Pattern.compile(
+//                "Regon:\\s*\\d+\\s+ul\\.?\\s*([^\\r\\n]+)",
+//                Pattern.CASE_INSENSITIVE
+//        );
+//
+//        Matcher buyerStreetMatcher = buyerStreetPattern.matcher(text);
+//
+//        if (buyerStreetMatcher.find()) {
+//            setStreetAndBuilding(buyer, "ul. " +
+//                    buyerStreetMatcher.group(1).trim());
+//        }
+//
+//        seller.setAddressKsef(seller.generateAddressKsef());
+//        buyer.setAddressKsef(buyer.generateAddressKsef());
+//
+//        invoice.setSeller(seller);
+//        invoice.setBuyer(buyer);
+//    }
+
+    private void parseBuyer(String text, Invoice invoice) {
         String[] lines = text.split("\\R");
 
-        // Znajdź wiersz z nazwami sprzedawcy i nabywcy.
-        String sellerName = null;
         String buyerName = null;
 
+        // Znajdź wiersz z nazwami sprzedawcy i nabywcy.
         Pattern namesPattern = Pattern.compile(
                 "^(.+?\\b(?:Sp\\.\\s*z\\s*o\\.\\s*o\\.|S\\.\\s*A\\.))\\s+(.+)$",
                 Pattern.CASE_INSENSITIVE
@@ -181,31 +279,25 @@ public class InvoiceParser {
                 Matcher names = namesPattern.matcher(lines[i + 1].trim());
 
                 if (names.find()) {
-                    sellerName = names.group(1).trim();
                     buyerName = names.group(2).trim();
                 }
                 break;
             }
         }
 
-        InvoiceParty seller = new InvoiceParty();
         InvoiceParty buyer = new InvoiceParty();
-
-        seller.setName(sellerName);
         buyer.setName(buyerName);
 
-        // Odczytaj numery NIP w kolejności występowania na fakturze.
+        // Odczytaj drugi NIP z faktury — NIP nabywcy.
         Matcher nipMatcher = Pattern.compile(
                 "NIP:\\s*(?:PL)?\\s*(\\d{10})",
                 Pattern.CASE_INSENSITIVE
         ).matcher(text);
 
         if (nipMatcher.find()) {
-            seller.setNip(nipMatcher.group(1));
-        }
-
-        if (nipMatcher.find()) {
-            buyer.setNip(nipMatcher.group(1));
+            if (nipMatcher.find()) {
+                buyer.setNip(nipMatcher.group(1));
+            }
         }
 
         // Adresy: wiersz zawierający oba kody pocztowe.
@@ -220,10 +312,6 @@ public class InvoiceParser {
             Matcher addresses = addressesPattern.matcher(line.trim());
 
             if (addresses.find()) {
-                seller.setPostalCode(addresses.group(1));
-                seller.setCity(addresses.group(2).trim());
-                setStreetAndBuilding(seller, addresses.group(3));
-
                 buyer.setPostalCode(addresses.group(4));
                 buyer.setCity(addresses.group(5).trim());
                 break;
@@ -239,16 +327,30 @@ public class InvoiceParser {
         Matcher buyerStreetMatcher = buyerStreetPattern.matcher(text);
 
         if (buyerStreetMatcher.find()) {
-            setStreetAndBuilding(buyer, "ul. " +
-                    buyerStreetMatcher.group(1).trim());
+            setStreetAndBuilding(
+                    buyer,
+                    "ul. " + buyerStreetMatcher.group(1).trim()
+            );
         }
 
-        seller.setAddressKsef(seller.generateAddressKsef());
         buyer.setAddressKsef(buyer.generateAddressKsef());
 
-        invoice.setSeller(seller);
         invoice.setBuyer(buyer);
     }
+
+
+    private void generateSeller(Invoice invoive){
+        InvoiceParty seller = new InvoiceParty();
+        seller.setNip("5472084567");
+        seller.setName("BIELMAT Sp. z o.o.");
+        seller.setPostalCode("43-300");
+        seller.setCity("Bielsko-Biała");
+        seller.setStreet("Warszawska");
+        seller.setBuildingNumber("56");
+        seller.setAddressKsef(seller.generateAddressKsef());
+        invoive.setSeller(seller);
+    }
+
 
     private void setStreetAndBuilding(InvoiceParty party, String address) {
         Matcher matcher = Pattern.compile(
