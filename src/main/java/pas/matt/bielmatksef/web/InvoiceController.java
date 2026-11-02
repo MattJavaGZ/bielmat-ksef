@@ -65,7 +65,7 @@ public class InvoiceController {
     @PostMapping("/edycja-faktury")
     public String invoiceEdit(@ModelAttribute("invoice") Invoice invoice, HttpSession session, Model model) {
 
-        invoice.getInvoiceErrors().clear();
+//        invoice.getInvoiceErrors().clear();
         InvoiceValidation.validateInvoice(invoice);
 
         session.setAttribute("invoice", invoice);

@@ -426,19 +426,6 @@ public class XmlBuilder {
         validateParty(invoice.getSeller(), "invoice.seller");
         validateParty(invoice.getBuyer(), "invoice.buyer");
 
-//        List<InvoiceItem> items = invoice.getItems();
-//        requirePresent(items, "invoice.items");
-//        for (int i = 0; i < items.size(); i++) {
-//            InvoiceItem item = items.get(i);
-//            String field = "invoice.items[" + i + "]";
-//            requirePresent(item, field);
-//            requireText(item.getName(), field + ".name");
-//            requireText(item.getUnit(), field + ".unit");
-//            requirePresent(item.getQuantity(), field + ".quantity");
-//            requirePresent(item.getUnitNetPrice(), field + ".unitNetPrice");
-//            requirePresent(item.getNetValue(), field + ".netValue");
-//            requireText(item.getVatRate(), field + ".vatRate");
-//        }
     }
 
     private static void validateParty(InvoiceParty party, String field) {
@@ -446,11 +433,6 @@ public class XmlBuilder {
         requireText(party.getNip(), field + ".nip");
         requireText(party.getName(), field + ".name");
         requireText(party.getAddressKsef(), field + ".adres");
-//        requireText(party.getCountryCode(), field + ".countryCode");
-//        requireText(party.getStreet(), field + ".street");
-//        requireText(party.getBuildingNumber(), field + ".buildingNumber");
-//        requireText(party.getPostalCode(), field + ".postalCode");
-//        requireText(party.getCity(), field + ".city");
     }
 
     private static void requireText(String value, String field) {
