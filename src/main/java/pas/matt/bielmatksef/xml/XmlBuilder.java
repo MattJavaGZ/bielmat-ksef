@@ -23,7 +23,6 @@ public class XmlBuilder {
         validateInvoice(invoice);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-
         XMLOutputFactory factory = XMLOutputFactory.newFactory();
 
         factory.setProperty(
@@ -32,9 +31,7 @@ public class XmlBuilder {
         );
 
         XMLStreamWriter xml = factory.createXMLStreamWriter(output, "UTF-8");
-
         xml.writeStartDocument("UTF-8", "1.0");
-
         xml.setDefaultNamespace(NS);
         xml.writeStartElement("", "Faktura", NS);
 //        xml.writeDefaultNamespace(NS);
