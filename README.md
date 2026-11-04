@@ -13,7 +13,7 @@ Aplikacja stworzona dla firmy w celu przyspieszenia wprowadzania faktur do KSeF 
 Parser został dostosowany do struktury dokumentów wykorzystywanych w procesie fakturowania firmy Bielmat.
 
 Aplikacja może być używana lokalnie. 
-Instalator na Windows do pobrania w zakładce [Releases](https://github.com/MattJavaGZ/bielmat-ksef/releases/tag/v1.0.0)
+Instalator na Windows do pobrania w zakładce [Releases](https://github.com/MattJavaGZ/bielmat-ksef/releases/tag/v1.0.0).
 Po instalacji i uruchomieniu aplikacja będzie dostępna pod adresem [http://localhost:8080](http://localhost:8080).
 
 Aplikacja gotowa do uruchomienia na serwerze za pomocą Dockera.
