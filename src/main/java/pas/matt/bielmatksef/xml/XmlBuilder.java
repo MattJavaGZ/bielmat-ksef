@@ -34,7 +34,6 @@ public class XmlBuilder {
         xml.writeStartDocument("UTF-8", "1.0");
         xml.setDefaultNamespace(NS);
         xml.writeStartElement("", "Faktura", NS);
-//        xml.writeDefaultNamespace(NS);
 
         xml.writeNamespace(
                 "etd",
