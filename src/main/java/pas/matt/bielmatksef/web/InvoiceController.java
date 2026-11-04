@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import pas.matt.bielmatksef.exceptions.PdfException;
 import pas.matt.bielmatksef.model.Invoice;
-import pas.matt.bielmatksef.model.InvoiceValidation;
+import pas.matt.bielmatksef.validation.InvoiceValidation;
 import pas.matt.bielmatksef.parser.InvoiceParser;
 import pas.matt.bielmatksef.pdf.PdfService;
 import pas.matt.bielmatksef.xml.XmlBuilder;
@@ -27,11 +27,13 @@ public class InvoiceController {
     private final PdfService pdfService;
     private final InvoiceParser invoiceParser;
     private final XmlBuilder xmlBuilder;
+    private final InvoiceValidation invoiceValidation;
 
-    public InvoiceController(PdfService pdfService, InvoiceParser invoiceParser, XmlBuilder xmlBuilder) {
+    public InvoiceController(PdfService pdfService, InvoiceParser invoiceParser, XmlBuilder xmlBuilder, InvoiceValidation invoiceValidation) {
         this.pdfService = pdfService;
         this.invoiceParser = invoiceParser;
         this.xmlBuilder = xmlBuilder;
+        this.invoiceValidation = invoiceValidation;
     }
 
     @PostMapping(value = "/upload-pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -43,8 +45,6 @@ public class InvoiceController {
 
             session.setAttribute("invoice", invoice);
             model.addAttribute("filename", file.getOriginalFilename());
-
-//            model.addAttribute("pdfText", text);
 
             return "pdf-preview";
 
@@ -65,11 +65,11 @@ public class InvoiceController {
     @PostMapping("/edycja-faktury")
     public String invoiceEdit(@ModelAttribute("invoice") Invoice invoice, HttpSession session, Model model) {
 
-//        invoice.getInvoiceErrors().clear();
-        InvoiceValidation.validateInvoice(invoice);
+        invoiceValidation.validateInvoice(invoice);
 
         session.setAttribute("invoice", invoice);
         model.addAttribute("filename", invoice.getInvoiceNumber());
+
         return "pdf-preview";
     }
 
@@ -101,6 +101,4 @@ public class InvoiceController {
                 .contentLength(xml.length)
                 .body(xml);
     }
-
-
 }

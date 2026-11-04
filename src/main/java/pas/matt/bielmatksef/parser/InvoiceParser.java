@@ -2,6 +2,7 @@ package pas.matt.bielmatksef.parser;
 
 import org.springframework.stereotype.Service;
 import pas.matt.bielmatksef.model.*;
+import pas.matt.bielmatksef.validation.InvoiceValidation;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,6 +14,12 @@ import java.util.regex.Pattern;
 
 @Service
 public class InvoiceParser {
+
+    private final InvoiceValidation invoiceValidation;
+
+    public InvoiceParser(InvoiceValidation invoiceValidation) {
+        this.invoiceValidation = invoiceValidation;
+    }
 
     // Początek pozycji: numer pozycji + pięciocyfrowy kod towaru
     private static final Pattern ITEM_START = Pattern.compile(
@@ -93,7 +100,7 @@ public class InvoiceParser {
         invoice.setItems(parseItems(text, unrecognizedItems));
         invoice.setUnrecognizedItems(unrecognizedItems);
 
-        InvoiceValidation.validateInvoice(invoice);
+        invoiceValidation.validateInvoice(invoice);
 
         return invoice;
     }

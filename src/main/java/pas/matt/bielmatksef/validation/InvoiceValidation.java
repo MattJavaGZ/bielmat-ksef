@@ -1,12 +1,18 @@
-package pas.matt.bielmatksef.model;
+package pas.matt.bielmatksef.validation;
+
+import org.springframework.stereotype.Component;
+import pas.matt.bielmatksef.model.Invoice;
+import pas.matt.bielmatksef.model.InvoiceItem;
+import pas.matt.bielmatksef.model.InvoiceParty;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+@Component
 public class InvoiceValidation {
 
-    public static void validateInvoice(Invoice invoice) {
+    public void validateInvoice(Invoice invoice) {
 
         validateInvoiceDetails(invoice);
         validateProducts(invoice);
@@ -17,7 +23,7 @@ public class InvoiceValidation {
         validateProductsNetValue(invoice);
     }
 
-    private static void validateInvoiceDetails(Invoice invoice) {
+    private void validateInvoiceDetails(Invoice invoice) {
         requireText(invoice.getCurrency(), "Brak waluty faktury", invoice);
         requireText(invoice.getInvoiceNumber(), "Brak numeru faktury", invoice);
         requirePresent(invoice.getIssueDate(), "Brak daty wystawienia faktury", invoice);
@@ -32,7 +38,7 @@ public class InvoiceValidation {
         validateParty(invoice.getBuyer(), "Brak danych nabywcy: ", invoice);
     }
 
-    private static void validateProducts(Invoice invoice) {
+    private void validateProducts(Invoice invoice) {
         List<InvoiceItem> items = invoice.getItems();
 
         for (int i = 0; i < items.size(); i++) {
@@ -47,25 +53,25 @@ public class InvoiceValidation {
         }
     }
 
-    private static void validateParty(InvoiceParty party, String field, Invoice invoice) {
+    private void validateParty(InvoiceParty party, String field, Invoice invoice) {
         requireText(party.getNip(), field + "nip", invoice);
         requireText(party.getName(), field + "nazwa podmiotu", invoice);
         requireText(party.getAddressKsef(), field + "adres", invoice);
     }
 
-    private static void requireText(String value, String field, Invoice invoice) {
+    private void requireText(String value, String field, Invoice invoice) {
         if (value == null || value.isBlank()) {
             invoice.getInvoiceErrors().add(field);
         }
     }
 
-    private static void requirePresent(Object value, String field, Invoice invoice) {
+    private void requirePresent(Object value, String field, Invoice invoice) {
         if (value == null) {
             invoice.getInvoiceErrors().add(field);
         }
     }
 
-    private static void validateProductsSumWithSummary(Invoice invoice) {
+    private void validateProductsSumWithSummary(Invoice invoice) {
         List<InvoiceItem> items = invoice.getItems();
 
         BigDecimal netValueSum = items.stream()
@@ -79,26 +85,31 @@ public class InvoiceValidation {
         }
     }
 
-    private static void validateSummary(Invoice invoice) {
+    private void validateSummary(Invoice invoice) {
 
-        BigDecimal summaryNetto = invoice.getTotalNet();
-        BigDecimal summaryVAT = invoice.getTotalVat();
-        BigDecimal summaryBrutto = invoice.getTotalGross();
-
-        BigDecimal summaryBruttoControl = summaryNetto.multiply(BigDecimal.valueOf(1.23));
-        BigDecimal summaryVATControl = summaryNetto.multiply(BigDecimal.valueOf(0.23));
-
-        BigDecimal summaryBruttoControlRounded = summaryBruttoControl.setScale(2, RoundingMode.HALF_UP);
-        BigDecimal summaryVATControlRounded = summaryVATControl.setScale(2, RoundingMode.HALF_UP);
-
-
-        if (!(summaryBrutto.compareTo(summaryBruttoControlRounded) == 0)
-                || !(summaryVAT.compareTo(summaryVATControlRounded) == 0)) {
-            invoice.getInvoiceErrors().add("UWAGA! Błąd w podsumowaniu. Sprawdź kwoty podsumowania");
+        if (invoice.getTotalNet() == null || invoice.getTotalVat() == null || invoice.getTotalGross() == null) {
+            invoice.getInvoiceErrors().add("UWAGA! Brak podsumowania faktury. Sprawdź kwoty podsumowania");
+            return;
         }
-    }
+            BigDecimal summaryNetto = invoice.getTotalNet();
+            BigDecimal summaryVAT = invoice.getTotalVat();
+            BigDecimal summaryBrutto = invoice.getTotalGross();
 
-    private static void validateProductsPricesNotZero(Invoice invoice) {  //czy cena produktu nie jest równa zero
+            BigDecimal summaryBruttoControl = summaryNetto.multiply(BigDecimal.valueOf(1.23));
+            BigDecimal summaryVATControl = summaryNetto.multiply(BigDecimal.valueOf(0.23));
+
+            BigDecimal summaryBruttoControlRounded = summaryBruttoControl.setScale(2, RoundingMode.HALF_UP);
+            BigDecimal summaryVATControlRounded = summaryVATControl.setScale(2, RoundingMode.HALF_UP);
+
+
+            if (!(summaryBrutto.compareTo(summaryBruttoControlRounded) == 0)
+                    || !(summaryVAT.compareTo(summaryVATControlRounded) == 0)) {
+                invoice.getInvoiceErrors().add("UWAGA! Błąd w podsumowaniu. Sprawdź kwoty podsumowania");
+            }
+        }
+
+
+    private void validateProductsPricesNotZero(Invoice invoice) {  //czy cena produktu nie jest równa zero
         long productsPriceZero = invoice.getItems().stream()
                 .filter(item -> item.getNetValue().compareTo(BigDecimal.ZERO) == 0)
                 .count();
@@ -108,14 +119,14 @@ public class InvoiceValidation {
         }
     }
 
-    private static void validateProductsNetValue(Invoice invoice){
+    private void validateProductsNetValue(Invoice invoice){
         invoice.getItems().stream()
-                .filter(InvoiceValidation::productNetValueVerify)
+                .filter(this::productNetValueVerify)
                 .forEach(item -> invoice.getInvoiceErrors().add
                         ("UWAGA! Produkt z pozycji " + item.getPosition() + " ma niezgodną ilość i cenę netto z wartością łączną netto"));
     }
 
-    private static boolean productNetValueVerify(InvoiceItem item) {
+    private boolean productNetValueVerify(InvoiceItem item) {
         BigDecimal productNetValueToValidate = item.getQuantity().multiply(item.getUnitNetPrice())
                 .setScale(2, RoundingMode.HALF_UP);
 
